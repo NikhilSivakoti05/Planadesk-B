@@ -35,7 +35,7 @@ public class AuthController {
         ResponseCookie cookie = ResponseCookie.from("jwt", auth.getToken())
                 .httpOnly(true)
                 .secure(true) // true in HTTPS
-                .sameSite("Lax") //  REQUIRED
+                .sameSite("None") //  REQUIRED
                 .path("/")
                 .maxAge(24 * 60 * 60)
                 .build();
