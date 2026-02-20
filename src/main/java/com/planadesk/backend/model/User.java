@@ -2,29 +2,77 @@ package com.planadesk.backend.model;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.index.Indexed;
 
-@Document(collection="users")
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.annotation.Transient;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
+
+@Document(collection = "users")
 public class User {
 
     @Id
     private String id;
+
     private String firstName;
     private String lastName;
+
     @Indexed(unique = true)
     private String email;
-    private String password;
-    private Role role;
-    private Address address;
-    private List<Order> orders;
-    private boolean enabled=true;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 
+    // 🔒 NEVER expose password
+    @JsonIgnore
+    private String password;
+
+    private Role role;
+
+    // Optional – avoid embedding heavy objects
+    @Transient
+    private Address address;
+
+    // ❗ Avoid embedding orders inside User
+    @Transient
+    private List<Order> orders;
+
+    private boolean enabled = true;
+
+    @CreatedDate
+    @Field("created_at")
+    private LocalDateTime createdAt;
+
+    @LastModifiedDate
+    @Field("updated_at")
+    private LocalDateTime updatedAt;
     
- // Getters
+ // 🔐 Password reset
+    @JsonIgnore
+    private String resetTokenHash;
+
+    @JsonIgnore
+    private LocalDateTime resetTokenExpiry;
+
+    // ---------------- GETTERS ----------------
+    public String getResetTokenHash() {
+        return resetTokenHash;
+    }
+
+    public void setResetTokenHash(String resetTokenHash) {
+        this.resetTokenHash = resetTokenHash;
+    }
+
+    public LocalDateTime getResetTokenExpiry() {
+        return resetTokenExpiry;
+    }
+
+    public void setResetTokenExpiry(LocalDateTime resetTokenExpiry) {
+        this.resetTokenExpiry = resetTokenExpiry;
+    }
+
     public String getId() {
         return id;
     }
@@ -69,21 +117,22 @@ public class User {
         return updatedAt;
     }
 
-    // Setters
+    // ---------------- SETTERS ----------------
+
     public void setId(String id) {
         this.id = id;
     }
 
     public void setFirstName(String firstName) {
-        this.firstName = firstName;
+        this.firstName = firstName != null ? firstName.trim() : null;
     }
 
     public void setLastName(String lastName) {
-        this.lastName = lastName;
+        this.lastName = lastName != null ? lastName.trim() : null;
     }
 
     public void setEmail(String email) {
-        this.email = email;
+        this.email = email != null ? email.toLowerCase().trim() : null;
     }
 
     public void setPassword(String password) {
