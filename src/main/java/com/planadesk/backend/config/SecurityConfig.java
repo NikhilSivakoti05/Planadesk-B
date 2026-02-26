@@ -147,31 +147,36 @@ public class SecurityConfig {
             // ---------------- AUTH RULES ----------------
             .authorizeHttpRequests(auth -> auth
 
-                // Preflight
-                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+            	    // 🔓 AUTH ENDPOINTS
+            	    .requestMatchers("/auth/**").permitAll()
 
-                // Public Auth
-                .requestMatchers("/auth/login", "/auth/signup").permitAll()
+            	    // Preflight
+            	    .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                // Public Data (READ-ONLY)
-                .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/countries/**").permitAll()
+            	    // ---------------- PUBLIC READ ----------------
+            	    .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
+            	    .requestMatchers(HttpMethod.GET, "/api/countries/**").permitAll()
 
-                // Admin (BACKEND ENFORCED)
-                .requestMatchers("/admin/**").hasRole("ADMIN")
-                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+            	    // ---------------- USER ----------------
+            	    .requestMatchers(HttpMethod.GET, "/api/orders/my").authenticated()
+            	    .requestMatchers("/api/cart/**").authenticated()
 
-                // Cart & Orders
-                .requestMatchers("/api/cart/**").authenticated()
-                .requestMatchers("/api/orders/**").authenticated()
-                 
-                //forgotpassword
-                .requestMatchers("/auth/forgot-password").permitAll()
-                .requestMatchers("/auth/reset-password").permitAll()
+            	    // ---------------- ADMIN ----------------
+            	    .requestMatchers(HttpMethod.GET, "/api/orders").hasRole("ADMIN")
 
-                // Everything else
-                .anyRequest().authenticated()
-            )
+            	    .requestMatchers(HttpMethod.POST, "/api/products/**").hasRole("ADMIN")
+            	    .requestMatchers(HttpMethod.PUT, "/api/products/**").hasRole("ADMIN")
+            	    .requestMatchers(HttpMethod.DELETE, "/api/products/**").hasRole("ADMIN")
+
+            	    .requestMatchers(HttpMethod.POST, "/api/countries/**").hasRole("ADMIN")
+            	    .requestMatchers(HttpMethod.PUT, "/api/countries/**").hasRole("ADMIN")
+            	    .requestMatchers(HttpMethod.DELETE, "/api/countries/**").hasRole("ADMIN")
+
+            	    .requestMatchers("/api/admin/**").hasRole("ADMIN")
+
+            	    // ---------------- EVERYTHING ELSE ----------------
+            	    .anyRequest().authenticated()
+            	)
 
             // ---------------- JWT FILTER ----------------
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
@@ -193,6 +198,7 @@ public class SecurityConfig {
         config.setAllowedOrigins(List.of(
             "http://localhost:8080", // 🔥 FRONTEND
             "http://localhost:5173",
+            "http://localhost:8098",
             "https://planadesk-f.vercel.app"
         ));
 

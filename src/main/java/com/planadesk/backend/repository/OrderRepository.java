@@ -10,4 +10,5 @@ public interface OrderRepository extends MongoRepository<Order, String> {
     List<Order> findByUserEmailOrderByOrderDateDesc(String email);
 
     List<Order> findAllByOrderByOrderDateDesc();
+    List<Order> findByUserEmail(String userEmail);
 }
