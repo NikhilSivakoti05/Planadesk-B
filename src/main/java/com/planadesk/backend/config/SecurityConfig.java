@@ -198,8 +198,8 @@ public class SecurityConfig {
 
         config.setAllowedOrigins(List.of(
             "http://localhost:8080", // 🔥 FRONTEND
-            "http://localhost:5173",
-            "http://localhost:8098",
+            
+            
             "https://planadesk-f.vercel.app"
         ));
 
