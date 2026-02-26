@@ -148,7 +148,8 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
 
             	    // 🔓 AUTH ENDPOINTS
-            	    .requestMatchers("/auth/**").permitAll()
+            		.requestMatchers(HttpMethod.POST, "/auth/**").permitAll()
+            		.requestMatchers(HttpMethod.GET, "/auth/**").permitAll()
 
             	    // Preflight
             	    .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
