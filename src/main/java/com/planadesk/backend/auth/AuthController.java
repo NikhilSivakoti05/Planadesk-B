@@ -401,7 +401,6 @@
 //        return source;
 //    }
 //}
-
 package com.planadesk.backend.auth;
 
 import java.time.Duration;
@@ -411,55 +410,101 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.planadesk.backend.dto.ForgotPasswordRequest;
+import com.planadesk.backend.dto.ResetPasswordRequest;
+import com.planadesk.backend.service.PasswordResetService;
+
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
 
     private final AuthService service;
+    private final PasswordResetService passwordResetService;
 
-    public AuthController(AuthService service) {
+    public AuthController(AuthService service,
+                          PasswordResetService passwordResetService) {
         this.service = service;
+        this.passwordResetService = passwordResetService;
     }
 
+    // ================= SIGNUP =================
+    @PostMapping("/signup")
+    public ResponseEntity<?> signup(@Valid @RequestBody SignupRequest request) {
+        service.signup(request);
+        return ResponseEntity.ok(Map.of("message", "Signup successful"));
+    }
+
+    // ================= LOGIN =================
     @PostMapping("/login")
     public ResponseEntity<?> login(
-            @RequestBody LoginRequest request,
+            @Valid @RequestBody LoginRequest request,
             HttpServletResponse response) {
 
         AuthResponse auth = service.login(request);
 
-        // 🔥 PRODUCTION-SAFE COOKIE
+        // ⚠ IMPORTANT: secure(false) for localhost HTTP
         ResponseCookie cookie = ResponseCookie.from("jwt", auth.getToken())
-            .httpOnly(true)
-            .secure(true)
-            .sameSite("None")
-            .path("/")
-            .maxAge(Duration.ofHours(2))
-            .build();
+                .httpOnly(true)
+                .secure(false)              // CHANGE TO true in production (HTTPS)
+                .sameSite("Lax")            // "Strict" can block some frontend flows
+                .path("/")
+                .maxAge(Duration.ofHours(2))
+                .build();
 
         response.addHeader("Set-Cookie", cookie.toString());
 
         return ResponseEntity.ok(Map.of(
-            "role", auth.getRole(),
-            "firstName", auth.getFirstName(),
-            "lastName", auth.getLastName()
+                "role", auth.getRole(),
+                "firstName", auth.getFirstName(),
+                "lastName", auth.getLastName()
         ));
     }
 
+    // ================= LOGOUT =================
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpServletResponse response) {
 
         ResponseCookie cookie = ResponseCookie.from("jwt", "")
-            .httpOnly(true)
-            .secure(true)
-            .sameSite("None")
-            .path("/")
-            .maxAge(0)
-            .build();
+                .httpOnly(true)
+                .secure(false)     // must match login cookie
+                .sameSite("Lax")
+                .path("/")
+                .maxAge(0)
+                .build();
 
         response.addHeader("Set-Cookie", cookie.toString());
-        return ResponseEntity.ok("Logged out");
+
+        return ResponseEntity.ok(Map.of("message", "Logged out"));
+    }
+
+    // ================= FORGOT PASSWORD =================
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(
+            @Valid @RequestBody ForgotPasswordRequest request) {
+
+        passwordResetService.requestPasswordReset(request.getEmail());
+
+        return ResponseEntity.ok(
+                Map.of("message",
+                        "If the email exists, a password reset link has been sent")
+        );
+    }
+
+    // ================= RESET PASSWORD =================
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(
+            @Valid @RequestBody ResetPasswordRequest request) {
+
+        passwordResetService.resetPassword(
+                request.getToken(),
+                request.getNewPassword()
+        );
+
+        return ResponseEntity.ok(
+                Map.of("message", "Password reset successful")
+        );
     }
 }
