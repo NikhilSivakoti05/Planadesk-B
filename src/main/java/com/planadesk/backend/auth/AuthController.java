@@ -237,12 +237,13 @@ public class AuthController {
 
         // 🔐 Cross-site production cookie (Vercel + Render)
         ResponseCookie cookie = ResponseCookie.from("jwt", auth.getToken())
-                .httpOnly(true)
-                .secure(true)                // ✅ HTTPS required
-                .sameSite("None")            // ✅ REQUIRED for cross-site
-                .path("/")
-                .maxAge(Duration.ofHours(2))
-                .build();
+        	    .httpOnly(true)
+        	    .secure(true)
+        	    .sameSite("None")
+        	    
+        	    .path("/")
+        	    .maxAge(Duration.ofHours(2))
+        	    .build();
 
         response.addHeader("Set-Cookie", cookie.toString());
 
@@ -260,13 +261,14 @@ public class AuthController {
     public ResponseEntity<?> logout(HttpServletResponse response) {
 
         // ⚠ Must match login cookie settings exactly
-        ResponseCookie cookie = ResponseCookie.from("jwt", "")
-                .httpOnly(true)
-                .secure(true)
-                .sameSite("None")           // ✅ MUST match login
-                .path("/")
-                .maxAge(0)
-                .build();
+    	ResponseCookie cookie = ResponseCookie.from("jwt", "")
+    		    .httpOnly(true)
+    		    .secure(true)
+    		    .sameSite("None")
+    		    
+    		    .path("/")
+    		    .maxAge(0)
+    		    .build();
 
         response.addHeader("Set-Cookie", cookie.toString());
 
