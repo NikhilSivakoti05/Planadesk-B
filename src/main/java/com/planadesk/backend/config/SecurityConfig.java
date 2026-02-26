@@ -156,6 +156,7 @@ public class SecurityConfig {
             	    // ---------------- PUBLIC READ ----------------
             	    .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
             	    .requestMatchers(HttpMethod.GET, "/api/countries/**").permitAll()
+            	    .requestMatchers(HttpMethod.GET, "/api/sections/**").permitAll()
 
             	    // ---------------- USER ----------------
             	    .requestMatchers(HttpMethod.GET, "/api/orders/my").authenticated()

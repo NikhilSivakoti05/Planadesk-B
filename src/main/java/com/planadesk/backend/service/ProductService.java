@@ -6,21 +6,30 @@ import com.planadesk.backend.model.Product;
 
 public interface ProductService {
 
-    Product createProduct(String name, String description,
-                          int globalStock,
-                          List<String> countryCodes,
-                          List<Double> prices,
-                          MultipartFile[] images);
+    Product createProduct(
+        String name,
+        String description,
+        int globalStock,
+        List<String> countryCodes,
+        List<Double> prices,
+        List<Integer> sections,
+        MultipartFile[] images
+    );
 
-    Product updateProduct(String productId, String name, String description,
-                          int globalStock,
-                          List<String> countryCodes,
-                          List<Double> prices,
-                          MultipartFile[] images);
+    Product updateProduct(
+        String id,
+        String name,
+        String description,
+        int globalStock,
+        List<String> countryCodes,
+        List<Double> prices,
+        List<Integer> sections,
+        MultipartFile[] images
+    );
 
-    void deleteProduct(String productId);
+    void deleteProduct(String id);
 
     List<Product> getAllProducts();
 
-    Product getProductById(String productId);
+    Product getProductById(String id);
 }

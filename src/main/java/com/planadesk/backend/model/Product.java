@@ -17,7 +17,10 @@ public class Product {
     private int globalStock;   // same for all countries
 
     private List<CountryPrice> countryPrices;  // price per country
+    private List<Integer> sections;
 
+    public List<Integer> getSections() { return sections; }
+    public void setSections(List<Integer> sections) { this.sections = sections; }
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
 

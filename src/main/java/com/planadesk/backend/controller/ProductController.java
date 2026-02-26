@@ -8,7 +8,6 @@ import com.planadesk.backend.service.ProductService;
 
 @RestController
 @RequestMapping("/api/products")
-
 public class ProductController {
 
     private final ProductService productService;
@@ -24,10 +23,18 @@ public class ProductController {
         @RequestParam int globalStock,
         @RequestParam List<String> countryCodes,
         @RequestParam List<Double> prices,
+        @RequestParam(required = false) List<Integer> sections,
         @RequestParam MultipartFile[] images
     ) {
         return productService.createProduct(
-            name, description, globalStock, countryCodes, prices, images);
+            name,
+            description,
+            globalStock,
+            countryCodes,
+            prices,
+            sections,
+            images
+        );
     }
 
     @PutMapping("/{id}")
@@ -38,12 +45,21 @@ public class ProductController {
         @RequestParam int globalStock,
         @RequestParam List<String> countryCodes,
         @RequestParam List<Double> prices,
+        @RequestParam(required = false) List<Integer> sections,
         @RequestParam(required = false) MultipartFile[] images
     ) {
         return productService.updateProduct(
-            id, name, description, globalStock, countryCodes, prices, images);
+            id,
+            name,
+            description,
+            globalStock,
+            countryCodes,
+            prices,
+            sections,
+            images
+        );
     }
-    
+
     @DeleteMapping("/{id}")
     public void deleteProduct(@PathVariable String id) {
         productService.deleteProduct(id);
