@@ -446,14 +446,14 @@ public class AuthController {
         AuthResponse auth = service.login(request);
 
         // ⚠ IMPORTANT: secure(false) for localhost HTTP
+     // In AuthController.java -> login() method
         ResponseCookie cookie = ResponseCookie.from("jwt", auth.getToken())
                 .httpOnly(true)
-                .secure(false)              // CHANGE TO true in production (HTTPS)
-                .sameSite("Lax")            // "Strict" can block some frontend flows
+                .secure(true)               // 🔥 MUST be true for production (HTTPS)
+                .sameSite("None")           // 🔥 MUST be "None" to allow Vercel to talk to Render
                 .path("/")
                 .maxAge(Duration.ofHours(2))
                 .build();
-
         response.addHeader("Set-Cookie", cookie.toString());
 
         return ResponseEntity.ok(Map.of(
