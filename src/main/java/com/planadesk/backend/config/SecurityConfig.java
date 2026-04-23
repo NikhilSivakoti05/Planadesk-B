@@ -198,10 +198,11 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         config.setAllowedOrigins(List.of(
-            "http://localhost:8080", // 🔥 FRONTEND
+            "http://localhost:8080", 
             
             
-            "https://planadesk-f.vercel.app"
+            "https://planadesk-f.vercel.app",
+            "https://planadesk-ao7nnb9rh-nikhils-projects-af15c4da.vercel.app"
         ));
 
         config.setAllowedMethods(List.of(
